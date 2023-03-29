@@ -1,6 +1,4 @@
-/*
-  19:50:00 30/04/2022, Augusto Goulart 1901560080
-*/
+/* Augusto Goulart (1901560080) 29/03/2023 09:19:00 */
 #ifndef BASE_H
 #define BASE_H 1
 

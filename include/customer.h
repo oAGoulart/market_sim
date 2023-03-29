@@ -1,35 +1,30 @@
-/*
-  19:40:00 30/04/2022, Augusto Goulart 1901560080
-*/
+/* Augusto Goulart (1901560080) 29/03/2023 09:19:00 */
 #ifndef CUSTOMER_H
 #define CUSTOMER_H 1
 
 #include <stdlib.h>
 #include "base.h"
 
-typedef enum customer_state_e {
-  CUSTOMER_WAITING,
-  CUSTOMER_SERVICE,
-  CUSTOMER_FINISHED,
-  CUSTOMER_NONE
-} customer_state_t;
-
 typedef struct customer_s customer_t;
 
-void customer_ctor(customer_t** self,
-  const size_t serial_number,
-  const size_t service_time,
-  const size_t cashier
-);
-void customer_dtor(customer_t** self);
+typedef enum customer_type_e {
+  customer_type_regular,
+  customer_type_preferential,
+  customer_type_cut
+} customer_type_t;
 
-void customer_update(customer_t* self, const customer_state_t state);
-size_t customer_get_serial_number(customer_t* self);
-size_t customer_get_service_time(customer_t* self);
-size_t customer_get_waiting_time(customer_t* self);
-size_t customer_get_cashier_id(customer_t* self);
-customer_state_t customer_get_state(customer_t* self);
-customer_t* customer_get_next(customer_t* self);
-void customer_set_next(customer_t* self, customer_t* next);
+typedef enum customer_status_e {
+  customer_status_waiting,
+  customer_status_served,
+  customer_status_left
+} customer_status_t;
+
+void customer_create(customer_t** self, size_t id, customer_type_t type);
+void customer_destroy(customer_t** self);
+void customer_update(customer_t* self, boolean_t served);
+customer_status_t customer_status(customer_t* self);
+customer_type_t customer_type(customer_t* self);
+size_t customer_id(customer_t* self);
+
 
 #endif /* CUSTOMER_H */

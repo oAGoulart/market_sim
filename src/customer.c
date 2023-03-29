@@ -1,108 +1,64 @@
-/*
-  21:30:00 30/04/2022, Augusto Goulart 1901560080
-*/
+/* Augusto Goulart (1901560080) 29/03/2023 09:19:00 */
 #include "../include/customer.h"
 
 struct customer_s {
-  size_t _serial_number; /* unique customer identifier */
-  size_t _service_time; /* time this customer will take once at the cashier */
-  size_t _waiting_time; /* time this customer has been waiting in the queue */
-  size_t _cashier; /* cashier id this customer is at */
-  customer_state_t _state; /* current state of this customer */
-  customer_t* _next;
+  size_t id_;
+  customer_type_t type_;
+  customer_status_t status_;
+  size_t waiting_time_;
+  size_t served_time_;
 };
 
-void customer_ctor(customer_t** self,
-  const size_t serial_number,
-  const size_t service_time,
-  const size_t cashier
-)
+void customer_create(customer_t** self, size_t id, customer_type_t type)
 {
-  if (self != NULL) {
-    *self = (customer_t*)malloc(sizeof(customer_t));
-    if (*self != NULL) {
-      (*self)->_serial_number = serial_number;
-      (*self)->_service_time = service_time;
-      (*self)->_waiting_time = 0;
-      (*self)->_cashier = cashier;
-      (*self)->_state = CUSTOMER_NONE;
-      (*self)->_next = NULL;
-      return;
-    }
+  if (self == NULL) __throw("customer_create: customer is NULL");
+  *self = (customer_t*) malloc(sizeof(customer_t));
+  (*self)->id_ = id;
+  (*self)->type_ = type;
+  (*self)->status_ = customer_status_waiting;
+  (*self)->waiting_time_ = 0;
+  (*self)->served_time_ = __rand(1, 10);
+}
+
+void customer_destroy(customer_t** self)
+{
+  if (self == NULL) __throw("customer_destroy: customer is NULL");
+  if (*self == NULL) __throw("customer_destroy: *customer is NULL");
+  free(*self);
+  *self = NULL;
+}
+
+void customer_update(customer_t* self, boolean_t served)
+{
+  if (self == NULL) __throw("customer_update: customer is NULL");
+  if (self->status_ == customer_status_waiting) {
+    self->waiting_time_++;
+    if (self->type_ == customer_type_cut && (__rand(0, 99) < 5))
+      self->status_ = customer_status_left;
+    if (self->waiting_time_ >= 6 && (__rand(0, 99) < 5))
+      self->status_ = customer_status_left;
+    else if (served) self->status_ = customer_status_served;
   }
-  __throw("Could not construct object of type customer_t");
-}
-
-void customer_dtor(customer_t** self)
-{
-	if (self != NULL) {
-		if (*self != NULL) {
-			free(*self);
-			*self = NULL;
-      return;
-		}
-	}
-  __throw("Object 'self' is not a valid customer_t");
-}
-
-void customer_update(customer_t* self, const customer_state_t state)
-{
-  self->_state = state;
-  switch (self->_state)
-  {
-  case CUSTOMER_WAITING:
-    {
-      self->_waiting_time++;
-      break;
-    }
-  case CUSTOMER_SERVICE:
-    {
-      if (self->_service_time <= 1) {
-        self->_state = CUSTOMER_FINISHED;
-        self->_service_time = 0;
-        break;
-      }
-      self->_service_time--;
-      break;
-    }
-  default:
-    {
-      break;
-    }
+  if (self->status_ == customer_status_served && served) {
+    self->served_time_--;
+    if (self->served_time_ == 0) self->status_ = customer_status_left;
   }
 }
 
-size_t customer_get_serial_number(customer_t* self)
+customer_status_t customer_status(customer_t* self)
 {
-  return self->_serial_number;
+  if (self == NULL) __throw("customer_status: customer is NULL");
+  return self->status_;
 }
 
-size_t customer_get_service_time(customer_t* self)
+customer_type_t customer_type(customer_t* self)
 {
-  return self->_service_time;
+  if (self == NULL) __throw("customer_type: customer is NULL");
+  return self->type_;
 }
 
-size_t customer_get_waiting_time(customer_t* self)
+size_t customer_id(customer_t* self)
 {
-  return self->_waiting_time;
-}
-
-size_t customer_get_cashier_id(customer_t* self)
-{
-  return self->_cashier;
-}
-
-customer_state_t customer_get_state(customer_t* self)
-{
-  return self->_state;
-}
-
-customer_t* customer_get_next(customer_t* self)
-{
-  return self->_next;
-}
-
-void customer_set_next(customer_t* self, customer_t* next)
-{
-  self->_next = next;
+  if (self == NULL) __throw("customer_id: customer is NULL");
+  return self->id_;
 }

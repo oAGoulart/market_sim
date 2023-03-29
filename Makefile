@@ -1,5 +1,4 @@
-# 15:47:00 05/05/2022, Augusto Goulart 1901560080
-
+# Augusto Goulart (1901560080) 29/03/2023 09:19:00
 CC = gcc
 CFLAGS = -g
 MD = mkdir
@@ -9,7 +8,7 @@ OUT_DIR = bin/
 SRC_DIR = src/
 
 PROJECT = market_sim
-SOURCES = main.c supermarket.c cashier.c queue.c customer.c
+SOURCES = main.c supermarket.c list.c cashier.c queue.c customer.c
 SOURCES_ABS = $(addprefix $(SRC_DIR),$(SOURCES))
 DEBUG_FLAGS = $(CFLAGS)
 RELEASE_FLAGS = $(CFLAGS) -DNDEBUG -O3

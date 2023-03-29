@@ -1,71 +1,126 @@
-/*
-  18:01:00 01/05/2022, Augusto Goulart 1901560080
-*/
+/* Augusto Goulart (1901560080) 29/03/2023 09:19:00 */
 #include "../include/cashier.h"
 
 struct cashier_s {
-  size_t _id; /* unique cashier identifier */
-  queue_t* _queue;
-  cashier_t* _next;
-  cashier_t* _previous;
+  size_t id_;
+  boolean_t is_preferential;
+  cashier_status_t status_;
+  queue_t* customers_;
 };
 
-void cashier_ctor(cashier_t** self, const size_t id)
+void cashier_create(cashier_t** self, size_t id, boolean_t preferential)
 {
-  if (self != NULL) {
-    queue_t* queue = NULL;
-    queue_ctor(&queue);
-    *self = (cashier_t*)malloc(sizeof(cashier_t));
-    if (*self != NULL) {
-      (*self)->_id = id;
-      (*self)->_queue = queue;
-      (*self)->_next = NULL;
-      (*self)->_previous = NULL;
-      return;
-    }
-    queue_dtor(&queue);
+  if (self == NULL) __throw("cashier_create: self is NULL");
+  *self = (cashier_t*) malloc(sizeof(cashier_t));
+  (*self)->id_ = id;
+  (*self)->is_preferential = preferential;
+  (*self)->status_ = cashier_status_open;
+  queue_create(&(*self)->customers_);
+}
+
+void cashier_destroy(cashier_t** self)
+{
+  if (self == NULL) __throw("cashier_destroy: self is NULL");
+  if (*self == NULL) __throw("cashier_destroy: *self is NULL");
+  queue_destroy(&(*self)->customers_);
+  free(*self);
+  *self = NULL;
+}
+
+void cashier_add_customer(cashier_t* self, customer_t* customer)
+{
+  if (self == NULL) __throw("cashier_add_customer: self is NULL");
+  if (customer == NULL) __throw("cashier_add_customer: customer is NULL");
+  queue_enqueue(self->customers_, customer);
+}
+
+customer_t* cashier_remove_customer(cashier_t* self)
+{
+  if (self == NULL) __throw("cashier_remove_customer: self is NULL");
+  return (customer_t*)queue_dequeue(self->customers_);
+}
+
+customer_t* cashier_peek_customer(cashier_t* self)
+{
+  if (self == NULL) __throw("cashier_peek_customer: self is NULL");
+  return (customer_t*)queue_peek(self->customers_);
+}
+
+void cashier_iterate(cashier_t* self, void (*callback)(customer_t*))
+{
+  if (self == NULL) __throw("cashier_iterate: self is NULL");
+  if (callback == NULL) __throw("cashier_iterate: callback is NULL");
+  queue_iterate(self->customers_, (void (*)(void*))callback);
+}
+
+void cashier_sort_customers_(cashier_t* self)
+{
+  if (self == NULL) __throw("cashier_update_customers_: self is NULL");
+  list_t* customers;
+  list_create(&customers);
+  while (!queue_empty(self->customers_)) {
+    customer_t* customer = (customer_t*)queue_dequeue(self->customers_);
+
+    customer_update(customer, FALSE);
+    if (customer_status(customer) == customer_status_left) 
+      customer_destroy(&customer);
+
+    if (customer != NULL) {
+      customer_type_t type = customer_type(customer);
+      if (self->is_preferential && type == customer_type_preferential)
+        list_emplace_front(customers, customer);
+      else if (type == customer_type_preferential && (__rand(0, 99) < 50))
+        list_emplace_front(customers, customer);
+      else if (type == customer_type_cut)
+        list_insert(customers, customer, list_size(customers) / 2);
+      else
+        list_emplace_back(customers, customer);
+    } 
   }
-  __throw("Could not construct object of type cashier_t");
-}
-
-void cashier_dtor(cashier_t** self)
-{
-  if (self != NULL) {
-    if ((*self) != NULL) {
-      queue_dtor(&(*self)->_queue);
-      free(*self);
-      return;
-    }
+  while (!list_empty(customers)) {
+    customer_t* customer = (customer_t*)list_remove_front(customers);
+    queue_enqueue(self->customers_, customer);
   }
-  __throw("Object 'self' is not a valid cashier_t");
+  list_destroy(&customers);
 }
 
-size_t cashier_get_id(cashier_t* self)
+void cashier_update(cashier_t* self)
 {
-  return self->_id;
+  if (self == NULL) __throw("cashier_update: self is NULL");
+  cashier_sort_customers_(self);
+  if (self->status_ == cashier_status_open) {
+    customer_t* customer = cashier_peek_customer(self);
+    if (customer != NULL)
+      customer_update(customer, TRUE);
+
+    if (__rand(0, 99) < 10)
+      self->status_ = cashier_status_issue;
+    else if (__rand(0, 99) < 2)
+      self->status_ = cashier_status_closed;
+  }
+  else if (self->status_ == cashier_status_closed) {
+    if (!queue_empty(self->customers_))
+      queue_clear(self->customers_);
+    if (__rand(0, 99) < 50) self->status_ = cashier_status_open;
+  }
+  else if (self->status_ == cashier_status_issue && (__rand(0, 99) < 70))
+    self->status_ = cashier_status_open;
 }
 
-queue_t* cashier_get_queue(cashier_t* self)
+size_t cashier_size(cashier_t* self)
 {
-  return self->_queue;
+  if (self == NULL) __throw("cashier_size: self is NULL");
+  return queue_size(self->customers_);
 }
 
-cashier_t* cashier_get_next(cashier_t* self)
+boolean_t cashier_empty(cashier_t* self)
 {
-  return self->_next;
+  if (self == NULL) __throw("cashier_empty: self is NULL");
+  return queue_empty(self->customers_);
 }
 
-cashier_t* cashier_get_previous(cashier_t* self)
+size_t cashier_id(cashier_t* self)
 {
-  return self->_previous;
-}
-
-void cashier_set_next(cashier_t* self, cashier_t* next)
-{
-  self->_next = next;
-}
-
-void cashier_set_previous(cashier_t* self, cashier_t* previous)
-{
-  self->_previous = previous;
+  if (self == NULL) __throw("cashier_id: self is NULL");
+  return self->id_;
 }
