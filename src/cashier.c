@@ -43,14 +43,27 @@ customer_t* cashier_remove_customer(cashier_t* self)
 customer_t* cashier_peek_customer(cashier_t* self)
 {
   if (self == NULL) __throw("cashier_peek_customer: self is NULL");
+  if (queue_empty(self->customers_)) return NULL;
   return (customer_t*)queue_peek(self->customers_);
 }
 
-void cashier_iterate(cashier_t* self, void (*callback)(customer_t*))
+void draw_customer(cashier_t* cashier, customer_t* customer, size_t at)
 {
-  if (self == NULL) __throw("cashier_iterate: self is NULL");
-  if (callback == NULL) __throw("cashier_iterate: callback is NULL");
-  queue_iterate(self->customers_, (void (*)(void*))callback);
+  if (cashier == NULL) __throw("draw_customer: cashier is NULL");
+  if (customer == NULL) __throw("draw_customer: customer is NULL");
+  const size_t bx = 12 + (4 * at);
+  const size_t by = 18 + (22 * cashier_id(cashier));
+
+  /* if true -> magenta; else -> yellow; */
+  size_t color = 35;
+  if (customer_type(customer) == customer_type_preferential) color = 33;
+  else if (customer_type(customer) == customer_type_cut) color = 36;
+  __csave();
+  __cmove(bx + 1, by); printf(__cs("%lu;%lu", "DD"), color, color + 10);
+  __cmove(bx, by + 3); printf(__cs("%lu", "n: %lu"), color, customer_id(customer));
+  __cmove(bx + 1, by + 3); printf(__cs("%lu", "t: %lu"), color, customer_served_time(customer));
+  __cmove(bx + 2, by + 3); printf(__cs("%lu", "w: %lu"), color, customer_waiting_time(customer));
+  __crestore();
 }
 
 void cashier_sort_customers_(cashier_t* self)
@@ -72,22 +85,43 @@ void cashier_sort_customers_(cashier_t* self)
       else if (type == customer_type_preferential && (__rand(0, 99) < 50))
         list_emplace_front(customers, customer);
       else if (type == customer_type_cut)
-        list_insert(customers, customer, list_size(customers) / 2);
+        list_emplace(customers, customer, list_size(customers) / 2);
       else
         list_emplace_back(customers, customer);
     } 
   }
+  size_t n = 0;
   while (!list_empty(customers)) {
     customer_t* customer = (customer_t*)list_remove_front(customers);
+    draw_customer(self, customer, n);
     queue_enqueue(self->customers_, customer);
+    n++;
   }
   list_destroy(&customers);
+}
+
+void draw_cashier(cashier_t* cashier, size_t at)
+{
+  if (cashier == NULL) __throw("draw_cashier: cashier is NULL");
+  const size_t bx = 10;
+  const size_t by = 8 + (22 * at);
+
+  __csave();
+  __cmove(bx, by); printf("id: " __c(34, "%lu"), cashier_id(cashier));
+  __cmove(bx + 2, by); printf(__c(37;47, "DDDDDDDD"));
+  __cmove(bx + 3, by); printf(__c(37;47, "DDDDDDDD"));
+  __cmove(bx + 4, by + 4); printf(__c(37;47, "DDDD"));
+  __cmove(bx + 5, by + 4); printf(__c(37;47, "DDDD"));
+  __cmove(bx + 6, by + 4); printf(__c(37;47, "DDDD"));
+  __cmove(bx + 7, by + 4); printf(__c(37;47, "DDDD"));
+  __crestore();
 }
 
 void cashier_update(cashier_t* self)
 {
   if (self == NULL) __throw("cashier_update: self is NULL");
   cashier_sort_customers_(self);
+  draw_cashier(self, cashier_id(self));
   if (self->status_ == cashier_status_open) {
     customer_t* customer = cashier_peek_customer(self);
     if (customer != NULL)

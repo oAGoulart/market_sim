@@ -20,7 +20,6 @@ void cashier_destroy(cashier_t** self);
 void cashier_add_customer(cashier_t* self, customer_t* customer);
 customer_t* cashier_remove_customer(cashier_t* self);
 customer_t* cashier_peek_customer(cashier_t* self);
-void cashier_iterate(cashier_t* self, void (*callback)(customer_t*));
 void cashier_update(cashier_t* self);
 size_t cashier_size(cashier_t* self);
 boolean_t cashier_empty(cashier_t* self);

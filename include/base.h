@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
+#include <unistd.h>
 
 #ifdef TRUE
 #undef TRUE
@@ -61,6 +63,9 @@ typedef uint8_t boolean_t;
 }
 
 /* rand helper */
-#define __rand(low, high) rand() % (high - low + 1) + low
+#define __rand(low, high) (rand() % (high - low + 1) + low)
+
+/* read helper */
+#define __ngetc(c) (read(0, (c), 1))
 
 #endif /* BASE_H */

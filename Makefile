@@ -8,7 +8,7 @@ OUT_DIR = bin/
 SRC_DIR = src/
 
 PROJECT = market_sim
-SOURCES = main.c supermarket.c list.c cashier.c queue.c customer.c
+SOURCES =  supermarket.c list.c cashier.c queue.c customer.c main.c
 SOURCES_ABS = $(addprefix $(SRC_DIR),$(SOURCES))
 DEBUG_FLAGS = $(CFLAGS)
 RELEASE_FLAGS = $(CFLAGS) -DNDEBUG -O3
@@ -25,5 +25,4 @@ release: debug
 	$(CC) $(RELEASE_FLAGS) $(SOURCES_ABS) -o $(OUT_DIR)release/$(PROJECT)
 
 debug:
-	$(MD) -p $(OUT_DIR)
 	$(CC) $(DEBUG_FLAGS) $(SOURCES_ABS) -o $(OUT_DIR)$(PROJECT)

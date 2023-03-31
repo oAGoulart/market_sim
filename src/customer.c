@@ -62,3 +62,15 @@ size_t customer_id(customer_t* self)
   if (self == NULL) __throw("customer_id: customer is NULL");
   return self->id_;
 }
+
+size_t customer_waiting_time(customer_t* self)
+{
+  if (self == NULL) __throw("customer_waiting_time: customer is NULL");
+  return self->waiting_time_;
+}
+
+size_t customer_served_time(customer_t* self)
+{
+  if (self == NULL) __throw("customer_served_time: customer is NULL");
+  return self->served_time_;
+}

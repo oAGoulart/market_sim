@@ -13,5 +13,7 @@ typedef struct supermarket_s supermarket_t;
 void supermarket_create(supermarket_t** self, size_t cashier_count, size_t preferential_count);
 void supermarket_destroy(supermarket_t** self);
 void supermarket_update(supermarket_t* self);
+size_t supermarket_customer_count(supermarket_t* self);
+size_t supermarket_cashier_count(supermarket_t* self);
 
 #endif /* SUPERMARKET_H */

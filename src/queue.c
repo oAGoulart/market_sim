@@ -13,22 +13,17 @@ void queue_destroy(queue_t** self)
 
 void queue_enqueue(queue_t* self, void* data)
 {
-  list_insert(self, data);
+  list_emplace_back(self, data);
 }
 
 void* queue_dequeue(queue_t* self)
 {
-  return list_remove(self, 0);
+  return list_remove_front(self);
 }
 
 void* queue_peek(queue_t* self)
 {
-  return list_get(self, 0);
-}
-
-void queue_iterate(queue_t* self, void (*callback)(void*))
-{
-  list_iterate(self, callback);
+  return list_at(self, 0);
 }
 
 void queue_clear(queue_t* self)

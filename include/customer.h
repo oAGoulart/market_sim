@@ -25,6 +25,7 @@ void customer_update(customer_t* self, boolean_t served);
 customer_status_t customer_status(customer_t* self);
 customer_type_t customer_type(customer_t* self);
 size_t customer_id(customer_t* self);
-
+size_t customer_waiting_time(customer_t* self);
+size_t customer_served_time(customer_t* self);
 
 #endif /* CUSTOMER_H */

@@ -13,7 +13,6 @@ void queue_destroy(queue_t** self);
 void queue_enqueue(queue_t* self, void* data);
 void* queue_dequeue(queue_t* self);
 void* queue_peek(queue_t* self);
-void queue_iterate(queue_t* self, void (*callback)(void*));
 void queue_clear(queue_t* self);
 size_t queue_size(queue_t* self);
 boolean_t queue_empty(queue_t* self);
