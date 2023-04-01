@@ -25,4 +25,5 @@ release: debug
 	$(CC) $(RELEASE_FLAGS) $(SOURCES_ABS) -o $(OUT_DIR)release/$(PROJECT)
 
 debug:
+	$(MD) -p $(OUT_DIR)
 	$(CC) $(DEBUG_FLAGS) $(SOURCES_ABS) -o $(OUT_DIR)$(PROJECT)

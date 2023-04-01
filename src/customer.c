@@ -11,7 +11,7 @@ struct customer_s {
 
 void customer_create(customer_t** self, size_t id, customer_type_t type)
 {
-  if (self == NULL) __throw("customer_create: customer is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   *self = (customer_t*) malloc(sizeof(customer_t));
   (*self)->id_ = id;
   (*self)->type_ = type;
@@ -22,15 +22,15 @@ void customer_create(customer_t** self, size_t id, customer_type_t type)
 
 void customer_destroy(customer_t** self)
 {
-  if (self == NULL) __throw("customer_destroy: customer is NULL");
-  if (*self == NULL) __throw("customer_destroy: *customer is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
+  if (*self == NULL) __throw(__exception_null_pointer);
   free(*self);
   *self = NULL;
 }
 
 void customer_update(customer_t* self, boolean_t served)
 {
-  if (self == NULL) __throw("customer_update: customer is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   if (self->status_ == customer_status_waiting) {
     self->waiting_time_++;
     if (self->type_ == customer_type_cut && (__rand(0, 99) < 5))
@@ -47,30 +47,30 @@ void customer_update(customer_t* self, boolean_t served)
 
 customer_status_t customer_status(customer_t* self)
 {
-  if (self == NULL) __throw("customer_status: customer is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   return self->status_;
 }
 
 customer_type_t customer_type(customer_t* self)
 {
-  if (self == NULL) __throw("customer_type: customer is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   return self->type_;
 }
 
 size_t customer_id(customer_t* self)
 {
-  if (self == NULL) __throw("customer_id: customer is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   return self->id_;
 }
 
 size_t customer_waiting_time(customer_t* self)
 {
-  if (self == NULL) __throw("customer_waiting_time: customer is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   return self->waiting_time_;
 }
 
 size_t customer_served_time(customer_t* self)
 {
-  if (self == NULL) __throw("customer_served_time: customer is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   return self->served_time_;
 }

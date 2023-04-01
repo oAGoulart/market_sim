@@ -42,30 +42,42 @@ typedef uint8_t boolean_t;
 /* terminal flush */
 #define __tflush() printf("\033[1;1H\033[2J")
 
+
 /* debugging helper */
 #if !defined(NDEBUG)
 #define __pdebug(str) \
 { \
   printf( \
-		str "\n" \
+		"%s\n" \
     "FILE: " __FILE__ " LINE: " __xstr(__LINE__) "\n" \
+    "FUNC: %s\n", str, __func__ \
   ); \
 }
 #else
 #define __pdebug(str)
 #endif
 
-/* fatal error */
-#define __throw(str) \
+/* exception handling */
+#define __exception_invalid_argument __c(41, " FATAL ") "\tInvalid argument"
+#define __exception_null_pointer __c(41, " FATAL ") "\tNULL pointer"
+#define __exception_unimplemented __c(41, " FATAL ") "\tUnimplemented"
+#define __exception_unexpected __c(41, " FATAL ") "\tUnexpected"
+#define __exception_realloc_failed __c(41, " FATAL ") "\trealloc() failed"
+#define __exception_malloc_failed __c(41, " FATAL ") "\tmalloc() failed"
+#define __exception_out_of_range __c(41, " FATAL ") "\tIndex out of range"
+#define __exception_fputc_failed __c(41, " FATAL ") "\tfputc() failed"
+#define __exception_fputs_failed __c(41, " FATAL ") "\tfputs() failed"
+#define __exception_fgets_failed __c(41, " FATAL ") "\tfgets() failed"
+#define __exception_fscanf_failed __c(41, " FATAL ") "\tfscanf() failed"
+#define __exception_snprintf_failed __c(41, " FATAL ") "\tsnprintf() failed"
+
+#define __throw(e) \
 { \
-  __pdebug(__c(41, " FATAL ") "\t" str); \
-  abort(); \
+  __pdebug(e); \
+  __builtin_trap(); \
 }
 
 /* rand helper */
-#define __rand(low, high) (rand() % (high - low + 1) + low)
-
-/* read helper */
-#define __ngetc(c) (read(0, (c), 1))
+#define __rand(low, high) rand() % (high - low + 1) + low
 
 #endif /* BASE_H */

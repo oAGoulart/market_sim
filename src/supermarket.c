@@ -10,8 +10,8 @@ struct supermarket_s {
 
 void supermarket_create(supermarket_t** self, size_t cashier_count, size_t preferential_count)
 {
-  if (self == NULL) __throw("supermarket_create: self is NULL");
-  if (cashier_count == 0) __throw("supermarket_create: cashier_count is 0"); 
+  if (self == NULL) __throw(__exception_null_pointer);
+  if (cashier_count == 0) __throw(__exception_invalid_argument); 
   *self = (supermarket_t*)malloc(sizeof(supermarket_t));
   (*self)->cashier_count_ = cashier_count;
   (*self)->preferential_count_ = preferential_count;
@@ -28,8 +28,8 @@ void supermarket_create(supermarket_t** self, size_t cashier_count, size_t prefe
 
 void supermarket_destroy(supermarket_t** self)
 {
-  if (self == NULL) __throw("supermarket_destroy: self is NULL");
-  if (*self == NULL) __throw("supermarket_destroy: *self is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
+  if (*self == NULL) __throw(__exception_null_pointer);
   size_t i = 0;
   for (; i < (*self)->cashier_count_; i++) {
     cashier_t* cashier = (cashier_t*)list_remove((*self)->cashier_list_, 0);
@@ -42,7 +42,7 @@ void supermarket_destroy(supermarket_t** self)
 
 void supermarket_update(supermarket_t* self)
 {
-  if (self == NULL) __throw("supermarket_update: self is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   customer_t* customer = NULL;
   if (__rand(0, 99) < 80) {
     customer_type_t type = customer_type_regular;
@@ -66,12 +66,12 @@ void supermarket_update(supermarket_t* self)
 
 size_t supermarket_customer_count(supermarket_t* self)
 {
-  if (self == NULL) __throw("supermarket_customer_count: self is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   return self->customer_count_;
 }
 
 size_t supermarket_cashier_count(supermarket_t* self)
 {
-  if (self == NULL) __throw("supermarket_cashier_count: self is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   return self->cashier_count_;
 }

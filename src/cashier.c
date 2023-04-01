@@ -3,25 +3,25 @@
 
 struct cashier_s {
   size_t id_;
-  boolean_t is_preferential;
+  boolean_t is_preferential_;
   cashier_status_t status_;
   queue_t* customers_;
 };
 
 void cashier_create(cashier_t** self, size_t id, boolean_t preferential)
 {
-  if (self == NULL) __throw("cashier_create: self is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   *self = (cashier_t*) malloc(sizeof(cashier_t));
   (*self)->id_ = id;
-  (*self)->is_preferential = preferential;
+  (*self)->is_preferential_ = preferential;
   (*self)->status_ = cashier_status_open;
   queue_create(&(*self)->customers_);
 }
 
 void cashier_destroy(cashier_t** self)
 {
-  if (self == NULL) __throw("cashier_destroy: self is NULL");
-  if (*self == NULL) __throw("cashier_destroy: *self is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
+  if (*self == NULL) __throw(__exception_null_pointer);
   queue_destroy(&(*self)->customers_);
   free(*self);
   *self = NULL;
@@ -29,28 +29,28 @@ void cashier_destroy(cashier_t** self)
 
 void cashier_add_customer(cashier_t* self, customer_t* customer)
 {
-  if (self == NULL) __throw("cashier_add_customer: self is NULL");
-  if (customer == NULL) __throw("cashier_add_customer: customer is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
+  if (customer == NULL) __throw(__exception_null_pointer);
   queue_enqueue(self->customers_, customer);
 }
 
 customer_t* cashier_remove_customer(cashier_t* self)
 {
-  if (self == NULL) __throw("cashier_remove_customer: self is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   return (customer_t*)queue_dequeue(self->customers_);
 }
 
 customer_t* cashier_peek_customer(cashier_t* self)
 {
-  if (self == NULL) __throw("cashier_peek_customer: self is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   if (queue_empty(self->customers_)) return NULL;
   return (customer_t*)queue_peek(self->customers_);
 }
 
 void draw_customer(cashier_t* cashier, customer_t* customer, size_t at)
 {
-  if (cashier == NULL) __throw("draw_customer: cashier is NULL");
-  if (customer == NULL) __throw("draw_customer: customer is NULL");
+  if (cashier == NULL) __throw(__exception_null_pointer);
+  if (customer == NULL) __throw(__exception_null_pointer);
   const size_t bx = 12 + (4 * at);
   const size_t by = 18 + (22 * cashier_id(cashier));
 
@@ -68,7 +68,7 @@ void draw_customer(cashier_t* cashier, customer_t* customer, size_t at)
 
 void cashier_sort_customers_(cashier_t* self)
 {
-  if (self == NULL) __throw("cashier_update_customers_: self is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   list_t* customers;
   list_create(&customers);
   while (!queue_empty(self->customers_)) {
@@ -80,7 +80,7 @@ void cashier_sort_customers_(cashier_t* self)
 
     if (customer != NULL) {
       customer_type_t type = customer_type(customer);
-      if (self->is_preferential && type == customer_type_preferential)
+      if (self->is_preferential_ && type == customer_type_preferential)
         list_emplace_front(customers, customer);
       else if (type == customer_type_preferential && (__rand(0, 99) < 50))
         list_emplace_front(customers, customer);
@@ -102,7 +102,7 @@ void cashier_sort_customers_(cashier_t* self)
 
 void draw_cashier(cashier_t* cashier, size_t at)
 {
-  if (cashier == NULL) __throw("draw_cashier: cashier is NULL");
+  if (cashier == NULL) __throw(__exception_null_pointer);
   const size_t bx = 10;
   const size_t by = 8 + (22 * at);
 
@@ -119,7 +119,7 @@ void draw_cashier(cashier_t* cashier, size_t at)
 
 void cashier_update(cashier_t* self)
 {
-  if (self == NULL) __throw("cashier_update: self is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   cashier_sort_customers_(self);
   draw_cashier(self, cashier_id(self));
   if (self->status_ == cashier_status_open) {
@@ -143,18 +143,18 @@ void cashier_update(cashier_t* self)
 
 size_t cashier_size(cashier_t* self)
 {
-  if (self == NULL) __throw("cashier_size: self is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   return queue_size(self->customers_);
 }
 
 boolean_t cashier_empty(cashier_t* self)
 {
-  if (self == NULL) __throw("cashier_empty: self is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   return queue_empty(self->customers_);
 }
 
 size_t cashier_id(cashier_t* self)
 {
-  if (self == NULL) __throw("cashier_id: self is NULL");
+  if (self == NULL) __throw(__exception_null_pointer);
   return self->id_;
 }
